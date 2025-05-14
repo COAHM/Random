@@ -155,6 +155,8 @@ String minWindow(String s, String t) {
 '''
 
 make_commit() {
+    git pull origin "$BRANCH" --rebase
+
     KEYS=("${!SNIPPETS[@]}")
     INDEX=$((RANDOM % ${#KEYS[@]}))
     FILE="${KEYS[$INDEX]}"
@@ -162,10 +164,19 @@ make_commit() {
 
     echo "$CODE" > "$FILE"
     git add "$FILE"
+
+    if git diff --cached --quiet; then
+        echo "[i] No changes detected. Deleting and re-adding $FILE."
+        rm -f "$FILE"
+        echo "$CODE" > "$FILE"
+        git add "$FILE"
+    fi
+
     git commit -m "solved leetcode problem: $FILE"
     git push origin "$BRANCH"
     echo "[+] Committed $FILE"
 }
+
 
 # Random 3–5 commits
 NUM_COMMITS=$((RANDOM % 3 + 3))
