@@ -166,9 +166,8 @@ make_commit() {
     git add "$FILE"
 
     if git diff --cached --quiet; then
-        echo "[i] No changes detected. Deleting and re-adding $FILE."
-        rm -f "$FILE"
-        echo "$CODE" > "$FILE"
+        echo "[i] No changes detected. Forcing update to $FILE."
+        echo "$CODE // updated $(date +%s)" > "$FILE"  # append timestamp
         git add "$FILE"
     fi
 
@@ -176,6 +175,7 @@ make_commit() {
     git push origin "$BRANCH"
     echo "[+] Committed $FILE"
 }
+
 
 
 # Random 3–5 commits
