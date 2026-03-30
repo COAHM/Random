@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # === CONFIGURATION ===
-REPO_PATH="/d/Projects/Random"
+REPO_PATH="C:/My_Stuffs/Projects/Others/Random"
 BRANCH="main"
 USERNAME="sakarpaudel"
 EMAIL="sakarpaudel06@gmail.com"
