@@ -185,7 +185,7 @@ for ((i=1; i<=NUM_COMMITS; i++))
 do
     make_commit
     if [ $i -lt $NUM_COMMITS ]; then
-        SLEEP_TIME=$((RANDOM % 5400 + 1800))
+        SLEEP_TIME=$((RANDOM % 20 + 1800))
         echo "[i] Sleeping $((SLEEP_TIME/60)) min before next commit"
         sleep "$SLEEP_TIME"
     fi
