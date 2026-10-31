@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 240
     steps:
       - name: Checkout Runner Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Load or Create .env from Secrets
         env:
@@ -52,15 +52,10 @@ jobs:
           fi
           tr -d '\r' < .env | grep -v '^#' | grep -v '^[[:space:]]*$' >> "$GITHUB_ENV"
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
       - name: Solve 2-3 Random LeetCode Problems with Random Delays & Push
         env:
           SKIP_DELAY: ${{ inputs.skip_delay || 'false' }}
-        run: python solve_leetcode.py
+        run: python3 solve_leetcode.py
 
       - name: Save Solved State in Runner Repo
         if: always()
