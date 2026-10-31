@@ -406,11 +406,32 @@ def strip_html(html_text: str) -> str:
     )
 
 
+def discover_models(api_key: str) -> list[str]:
+    try:
+        req = urllib.request.Request(
+            "https://generativelanguage.googleapis.com/v1beta/models",
+            headers={"X-goog-api-key": api_key},
+            method="GET",
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        found = []
+        for m in data.get("models") or []:
+            methods = m.get("supportedGenerationMethods") or []
+            name = (m.get("name") or "").removeprefix("models/")
+            if "generateContent" in methods and "gemini" in name:
+                found.append(name)
+        # Prefer flash models first for speed and quota
+        flash = [m for m in found if "flash" in m and "vision" not in m]
+        others = [m for m in found if m not in flash]
+        return flash + others
+    except Exception as exc:
+        print(f"[i] ListModels check for key returned: {exc}", file=sys.stderr)
+        return []
+
+
 def solve_with_gemini(api_key: str, problem: dict, category_name: str) -> str:
     preferred_model = os.environ.get("GEMINI_MODEL", "").strip()
-    models = ([preferred_model] if preferred_model else []) + [
-        m for m in DEFAULT_MODELS if m != preferred_model
-    ]
 
     dart_snippet = ""
     for snippet in problem.get("codeSnippets") or []:
@@ -448,13 +469,15 @@ def solve_with_gemini(api_key: str, problem: dict, category_name: str) -> str:
     if not api_keys:
         raise RuntimeError("No valid GEMINI_API_KEY provided.")
 
-    last_err = None
+    errors: list[str] = []
     for current_key in api_keys:
-        active_models = list(models)
-        idx = 0
-        while idx < len(active_models):
-            model = active_models[idx]
-            idx += 1
+        discovered = discover_models(current_key)
+        base_models = discovered if discovered else DEFAULT_MODELS
+        active_models = ([preferred_model] if preferred_model else []) + [
+            m for m in base_models if m != preferred_model
+        ]
+
+        for model in active_models[:4]:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
             for attempt in range(2):
                 try:
@@ -475,27 +498,23 @@ def solve_with_gemini(api_key: str, problem: dict, category_name: str) -> str:
                     raw_text = re.sub(r"^```(?:dart)?\s*", "", raw_text)
                     raw_text = re.sub(r"\s*```$", "", raw_text)
                     if raw_text:
+                        print(f"[+] Solved using model: {model}")
                         return raw_text.strip() + "\n"
                 except urllib.error.HTTPError as http_err:
                     err_body = ""
                     try:
-                        err_body = http_err.read().decode("utf-8", errors="ignore")[:300]
+                        err_body = http_err.read().decode("utf-8", errors="ignore")[:250]
                     except Exception:
                         pass
-                    suggested = re.search(r"models/(gemini-[a-zA-Z0-9._-]+)", err_body)
-                    if suggested:
-                        new_model = suggested.group(1)
-                        if new_model not in active_models:
-                            active_models.insert(idx, new_model)
-                    last_err = f"HTTP {http_err.code} on {model}: {err_body or http_err.reason}"
+                    errors.append(f"HTTP {http_err.code} on {model}: {err_body or http_err.reason}")
                     if http_err.code in (400, 401, 403, 404, 429):
                         break
                     time.sleep(2 ** attempt)
                 except Exception as exc:
-                    last_err = exc
+                    errors.append(f"{model}: {exc}")
                     time.sleep(2 ** attempt)
 
-    raise RuntimeError(f"Gemini generation failed across all keys and models: {last_err}")
+    raise RuntimeError(" | ".join(errors[:3]))
 
 
 def run_git(
