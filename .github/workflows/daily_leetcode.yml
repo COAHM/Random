@@ -2,8 +2,8 @@ name: Daily LeetCode Solver
 
 on:
   schedule:
-    # Triggers daily at 09:30 UTC (15:15 Nepal Time), then waits a random delay before each solve
-    - cron: '30 9 * * *'
+    # Triggers daily at 10:05 UTC (15:50 Nepal Time), then waits a random delay before each solve
+    - cron: '5 10 * * *'
   workflow_dispatch:
     inputs:
       skip_delay:
