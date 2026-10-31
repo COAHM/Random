@@ -4,7 +4,9 @@
     "longest-palindromic-substring",
     "3sum",
     "word-break",
-    "minimum-window-substring"
+    "minimum-window-substring",
+    "binary-watch",
+    "create-maximum-number",
+    "longest-substring-with-at-least-k-repeating-characters"
   ]
 }
-
