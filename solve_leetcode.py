@@ -19,7 +19,7 @@ import urllib.request
 from pathlib import Path
 
 LEETCODE_GRAPHQL_URL = "https://leetcode.com/graphql"
-DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"]
 
 # Category tag slug -> clean folder name in the target repo
 CATEGORIES = {
@@ -203,31 +203,52 @@ def solve_with_gemini(api_key: str, problem: dict, category_name: str) -> str:
     ).encode("utf-8")
 
     last_err = None
-    for model in models:
-        url = (
-            f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"{model}:generateContent?key={api_key}"
-        )
-        for attempt in range(3):
-            try:
-                req = urllib.request.Request(
-                    url,
-                    data=payload,
-                    headers={"Content-Type": "application/json"},
-                    method="POST",
-                )
-                with urllib.request.urlopen(req, timeout=60) as resp:
-                    result = json.loads(resp.read().decode("utf-8"))
-                raw_text = (
-                    result["candidates"][0]["content"]["parts"][0]["text"].strip()
-                )
-                raw_text = re.sub(r"^```(?:dart)?\s*", "", raw_text)
-                raw_text = re.sub(r"\s*```$", "", raw_text)
-                if raw_text:
-                    return raw_text.strip() + "\n"
-            except Exception as exc:
-                last_err = exc
-                time.sleep(2 ** attempt)
+    # Support both Google AI Studio keys (AIza...) and Vertex AI Express keys (AQ....)
+    endpoints = (
+        [
+            "https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:generateContent?key={key}",
+            "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",
+        ]
+        if api_key.startswith("AQ.")
+        else [
+            "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",
+            "https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:generateContent?key={key}",
+        ]
+    )
+
+    for endpoint_tpl in endpoints:
+        for model in models:
+            url = endpoint_tpl.format(model=model, key=api_key)
+            for attempt in range(2):
+                try:
+                    req = urllib.request.Request(
+                        url,
+                        data=payload,
+                        headers={"Content-Type": "application/json"},
+                        method="POST",
+                    )
+                    with urllib.request.urlopen(req, timeout=60) as resp:
+                        result = json.loads(resp.read().decode("utf-8"))
+                    raw_text = (
+                        result["candidates"][0]["content"]["parts"][0]["text"].strip()
+                    )
+                    raw_text = re.sub(r"^```(?:dart)?\s*", "", raw_text)
+                    raw_text = re.sub(r"\s*```$", "", raw_text)
+                    if raw_text:
+                        return raw_text.strip() + "\n"
+                except urllib.error.HTTPError as http_err:
+                    err_body = ""
+                    try:
+                        err_body = http_err.read().decode("utf-8", errors="ignore")[:200]
+                    except Exception:
+                        pass
+                    last_err = f"HTTP {http_err.code} on {model}: {err_body or http_err.reason}"
+                    if http_err.code in (400, 401, 403, 404):
+                        break
+                    time.sleep(2 ** attempt)
+                except Exception as exc:
+                    last_err = exc
+                    time.sleep(2 ** attempt)
 
     raise RuntimeError(f"Gemini generation failed across all models: {last_err}")
 
@@ -346,7 +367,7 @@ def main() -> None:
     root_dir = Path(__file__).parent.resolve()
     load_dotenv(root_dir / ".env")
 
-    api_key = require_env("GEMINI_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     git_username = require_env("GIT_AUTHOR_NAME")
     git_email = require_env("GIT_AUTHOR_EMAIL")
     target_branch = os.environ.get("TARGET_BRANCH", "main").strip() or "main"
@@ -384,9 +405,10 @@ def main() -> None:
     random.shuffle(available_tags)
 
     solved_count = 0
+    consecutive_failures = 0
 
-    for tag_slug in available_tags:
-        if solved_count >= num_to_solve:
+    for tag_slug in available_tags if api_key else []:
+        if solved_count >= num_to_solve or consecutive_failures >= 3:
             break
 
         folder_name = CATEGORIES[tag_slug]
@@ -457,6 +479,7 @@ def main() -> None:
                 )
 
             solved_count += 1
+            consecutive_failures = 0
             print(f"[+] Committed {rel_path} ({solved_count}/{num_to_solve})")
 
             if solved_count < num_to_solve and not skip_delay:
@@ -465,6 +488,7 @@ def main() -> None:
                 time.sleep(sleep_time)
 
         except Exception as exc:
+            consecutive_failures += 1
             print(f"[!] Skipped category {tag_slug} due to error: {exc}", file=sys.stderr)
             continue
 
