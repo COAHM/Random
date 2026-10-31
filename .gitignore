@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+public_repo/
+target_repo/
+
