@@ -806,6 +806,10 @@ def main() -> None:
             print(f"[i] Sleeping {sleep_time // 60} min before next commit")
             time.sleep(sleep_time)
 
+    solved_data["last_run"] = int(time.time())
+    solved_db_path.write_text(
+        json.dumps(solved_data, indent=2) + "\n", encoding="utf-8"
+    )
     print("[*] Finished commits.")
 
 
