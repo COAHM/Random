@@ -7,6 +7,10 @@
     "minimum-window-substring",
     "binary-watch",
     "create-maximum-number",
-    "longest-substring-with-at-least-k-repeating-characters"
-  ]
+    "longest-substring-with-at-least-k-repeating-characters",
+    "hamming-distance",
+    "plus-one",
+    "word-search-ii"
+  ],
+  "last_run": 1793439616
 }
