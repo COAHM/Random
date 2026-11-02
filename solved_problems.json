@@ -15,7 +15,10 @@
     "find-all-duplicates-in-an-array",
     "words-within-two-edits-of-dictionary",
     "contains-duplicate-ii",
-    "path-sum"
+    "path-sum",
+    "course-schedule",
+    "expression-add-operators",
+    "beautiful-arrangement"
   ],
-  "last_run": 1793620847
+  "last_run": 1793653188
 }
