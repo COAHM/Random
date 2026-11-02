@@ -2,8 +2,8 @@ name: Daily LeetCode Solver
 
 on:
   schedule:
-    # Triggers daily at 09:30 UTC (15:15 Nepal Time), then waits a random delay before each solve
-    - cron: '30 9 * * *'
+    # Triggers daily at 09:15 UTC (15:00 / 3:00 PM Nepal Time)
+    - cron: '15 9 * * *'
   workflow_dispatch:
     inputs:
       skip_delay:
@@ -21,7 +21,7 @@ permissions:
 jobs:
   solve-and-push:
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 360
     steps:
       - name: Checkout Runner Repo
         uses: actions/checkout@v5

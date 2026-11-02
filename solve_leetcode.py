@@ -653,7 +653,7 @@ def main() -> None:
     skip_delay = os.environ.get("SKIP_DELAY", "false").lower() == "true"
 
     if not skip_delay:
-        initial_sleep = random.randint(60, 2700)
+        initial_sleep = random.randint(900, 2700)
         print(
             f"[i] Waiting {initial_sleep // 60} min ({initial_sleep}s) before starting daily solve..."
         )
@@ -678,7 +678,7 @@ def main() -> None:
     run_git(["config", "user.name", git_username], cwd=target_repo_dir)
     run_git(["config", "user.email", git_email], cwd=target_repo_dir)
 
-    num_to_solve = random.randint(2, 3)
+    num_to_solve = random.randint(2, 5)
     available_tags = list(CATEGORIES.keys())
     random.shuffle(available_tags)
 
@@ -761,7 +761,7 @@ def main() -> None:
             print(f"[+] Committed {rel_path} ({solved_count}/{num_to_solve})")
 
             if solved_count < num_to_solve and not skip_delay:
-                sleep_time = random.randint(1800, 3300)
+                sleep_time = random.randint(900, 2700)
                 print(f"[i] Sleeping {sleep_time // 60} min before next commit")
                 time.sleep(sleep_time)
 
@@ -802,7 +802,7 @@ def main() -> None:
         solved_count += 1
         print(f"[+] Fallback commit completed ({solved_count}/{num_to_solve})")
         if solved_count < num_to_solve and not skip_delay:
-            sleep_time = random.randint(1800, 3300)
+            sleep_time = random.randint(900, 2700)
             print(f"[i] Sleeping {sleep_time // 60} min before next commit")
             time.sleep(sleep_time)
 
