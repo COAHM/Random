@@ -58,6 +58,7 @@ FALLBACK_PROBLEMS = [
         "difficulty": "Easy",
         "code": """/*
  * Problem #1: Two Sum (Easy)
+ * LeetCode: https://leetcode.com/problems/two-sum/
  *
  * Given an array of integers nums and an integer target, return indices of the
  * two numbers such that they add up to target.
@@ -99,6 +100,7 @@ class Solution {
         "difficulty": "Medium",
         "code": """/*
  * Problem #56: Merge Intervals (Medium)
+ * LeetCode: https://leetcode.com/problems/merge-intervals/
  *
  * Given an array of intervals where intervals[i] = [start_i, end_i], merge all
  * overlapping intervals, and return an array of the non-overlapping intervals
@@ -144,6 +146,7 @@ class Solution {
         "difficulty": "Medium",
         "code": """/*
  * Problem #5: Longest Palindromic Substring (Medium)
+ * LeetCode: https://leetcode.com/problems/longest-palindromic-substring/
  *
  * Given a string s, return the longest palindromic substring in s.
  *
@@ -191,6 +194,7 @@ class Solution {
         "difficulty": "Medium",
         "code": """/*
  * Problem #139: Word Break (Medium)
+ * LeetCode: https://leetcode.com/problems/word-break/
  *
  * Given a string s and a dictionary of strings wordDict, return true if s can
  * be segmented into a space-separated sequence of one or more dictionary words.
@@ -232,6 +236,7 @@ class Solution {
         "difficulty": "Hard",
         "code": """/*
  * Problem #76: Minimum Window Substring (Hard)
+ * LeetCode: https://leetcode.com/problems/minimum-window-substring/
  *
  * Given two strings s and t of lengths m and n respectively, return the minimum
  * window substring of s such that every character in t (including duplicates)
@@ -443,16 +448,25 @@ def solve_with_gemini(api_key: str, problem: dict, category_name: str) -> str:
     title = problem.get("title", "")
     difficulty = problem.get("difficulty", "Medium")
     frontend_id = problem.get("questionFrontendId", "")
+    slug = problem.get("titleSlug", "")
+    problem_url = f"https://leetcode.com/problems/{slug}/" if slug else ""
 
     prompt = (
         f"You are an experienced software engineer solving a LeetCode problem in Dart 3 (null-safe).\n\n"
         f"Problem #{frontend_id}: {title} ({difficulty})\n"
+        f"LeetCode Link: {problem_url}\n"
         f"Category: {category_name}\n\n"
         f"Description:\n{description}\n\n"
         f"Starter Code:\n{dart_snippet}\n\n"
         f"Requirements:\n"
         f"1. Output ONLY valid Dart code. Do NOT wrap the output in markdown fences (```dart).\n"
-        f"2. At the top of the file, include the full problem title, difficulty, and problem description (including examples and constraints) inside a clean `/* ... */` block comment.\n"
+        f"2. At the top of the file, include the problem header inside a clean `/* ... */` block comment formatted exactly as:\n"
+        f"   /*\n"
+        f"    * Problem #{frontend_id}: {title} ({difficulty})\n"
+        f"    * LeetCode: {problem_url}\n"
+        f"    *\n"
+        f"    * <full problem description, examples, and constraints>\n"
+        f"    */\n"
         f"3. Right below the question block comment, add a brief, natural developer note with Time Complexity and Space Complexity.\n"
         f"4. Write a 100% correct, optimal solution inside the `Solution` class (matching the exact LeetCode starter signature) that handles all edge cases and passes all LeetCode test cases.\n"
         f"5. Add short, natural, human-like inline comments (`// ...`) only on key algorithmic tricks, pointer updates, or non-obvious conditions—avoid robotic or overly verbose comments."
