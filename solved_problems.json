@@ -10,7 +10,10 @@
     "longest-substring-with-at-least-k-repeating-characters",
     "hamming-distance",
     "plus-one",
-    "word-search-ii"
+    "word-search-ii",
+    "pascals-triangle",
+    "find-all-duplicates-in-an-array",
+    "words-within-two-edits-of-dictionary"
   ],
-  "last_run": 1793439616
+  "last_run": 1793557701
 }
