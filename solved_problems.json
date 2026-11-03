@@ -18,7 +18,10 @@
     "path-sum",
     "course-schedule",
     "expression-add-operators",
-    "beautiful-arrangement"
+    "beautiful-arrangement",
+    "lexicographical-numbers",
+    "trapping-rain-water",
+    "verify-preorder-serialization-of-a-binary-tree"
   ],
-  "last_run": 1793653188
+  "last_run": 1793730778
 }
