@@ -1,9 +1,6 @@
 name: Daily LeetCode Solver
 
 on:
-  schedule:
-    # Triggers daily at 09:15 UTC (15:00 / 3:00 PM Nepal Time)
-    - cron: '15 9 * * *'
   workflow_dispatch:
     inputs:
       skip_delay:
