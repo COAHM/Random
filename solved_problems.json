@@ -21,7 +21,9 @@
     "beautiful-arrangement",
     "lexicographical-numbers",
     "trapping-rain-water",
-    "verify-preorder-serialization-of-a-binary-tree"
+    "verify-preorder-serialization-of-a-binary-tree",
+    "merge-sorted-array",
+    "two-sum-ii-input-array-is-sorted"
   ],
-  "last_run": 1793730778
+  "last_run": 1793801318
 }
