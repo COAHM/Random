@@ -23,7 +23,9 @@
     "trapping-rain-water",
     "verify-preorder-serialization-of-a-binary-tree",
     "merge-sorted-array",
-    "two-sum-ii-input-array-is-sorted"
+    "two-sum-ii-input-array-is-sorted",
+    "count-prefix-and-suffix-pairs-i",
+    "reverse-integer"
   ],
-  "last_run": 1793801318
+  "last_run": 1793880080
 }
