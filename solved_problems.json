@@ -35,7 +35,9 @@
     "contains-duplicate-iii",
     "convert-sorted-array-to-binary-search-tree",
     "unique-binary-search-trees",
-    "monotone-increasing-digits"
+    "monotone-increasing-digits",
+    "implement-queue-using-stacks",
+    "invert-binary-tree"
   ],
-  "last_run": 1794136397
+  "last_run": 1794219556
 }
