@@ -43,7 +43,10 @@
     "find-k-pairs-with-smallest-sums",
     "unique-paths-ii",
     "distinct-subsequences",
-    "ugly-number-ii"
+    "ugly-number-ii",
+    "binary-number-with-alternating-bits",
+    "maximum-strong-pair-xor-i",
+    "is-graph-bipartite"
   ],
-  "last_run": 1794478436
+  "last_run": 1794567323
 }
