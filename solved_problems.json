@@ -46,7 +46,11 @@
     "ugly-number-ii",
     "binary-number-with-alternating-bits",
     "maximum-strong-pair-xor-i",
-    "is-graph-bipartite"
+    "is-graph-bipartite",
+    "bulls-and-cows",
+    "best-time-to-buy-and-sell-stock-iii",
+    "symmetric-tree",
+    "majority-element"
   ],
-  "last_run": 1794567323
+  "last_run": 1794657126
 }
