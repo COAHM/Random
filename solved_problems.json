@@ -50,7 +50,11 @@
     "bulls-and-cows",
     "best-time-to-buy-and-sell-stock-iii",
     "symmetric-tree",
-    "majority-element"
+    "majority-element",
+    "longest-valid-parentheses",
+    "largest-number",
+    "queue-reconstruction-by-height",
+    "path-sum-ii"
   ],
-  "last_run": 1794657126
+  "last_run": 1794742060
 }
