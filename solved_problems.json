@@ -60,7 +60,9 @@
     "nth-digit",
     "palindrome-linked-list",
     "longest-substring-without-repeating-characters",
-    "shortest-unsorted-continuous-subarray"
+    "shortest-unsorted-continuous-subarray",
+    "k-closest-points-to-origin",
+    "maximal-square"
   ],
-  "last_run": 1794909914
+  "last_run": 1794998457
 }
