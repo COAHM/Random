@@ -62,7 +62,11 @@
     "longest-substring-without-repeating-characters",
     "shortest-unsorted-continuous-subarray",
     "k-closest-points-to-origin",
-    "maximal-square"
+    "maximal-square",
+    "divide-two-integers",
+    "longest-common-prefix",
+    "count-of-smaller-numbers-after-self",
+    "search-in-rotated-sorted-array"
   ],
-  "last_run": 1794998457
+  "last_run": 1795086951
 }
