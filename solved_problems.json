@@ -66,7 +66,11 @@
     "divide-two-integers",
     "longest-common-prefix",
     "count-of-smaller-numbers-after-self",
-    "search-in-rotated-sorted-array"
+    "search-in-rotated-sorted-array",
+    "sqrtx",
+    "sum-of-prefix-scores-of-strings",
+    "find-the-difference",
+    "edit-distance"
   ],
-  "last_run": 1795086951
+  "last_run": 1795195101
 }
