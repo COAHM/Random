@@ -16,7 +16,9 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from datetime import datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 LEETCODE_GRAPHQL_URL = "https://leetcode.com/graphql"
 DEFAULT_MODELS = [
@@ -532,7 +534,7 @@ def solve_with_gemini(api_key: str, problem: dict, category_name: str) -> str:
 
 
 def run_git(
-    args: list[str], cwd: Path, check: bool = True
+    args: list[str], cwd: Path, check: bool = True, env: dict | None = None
 ) -> subprocess.CompletedProcess:
     return subprocess.run(
         ["git", *args],
@@ -540,7 +542,24 @@ def run_git(
         check=check,
         capture_output=True,
         text=True,
+        env={**os.environ, **env} if env else None,
     )
+
+
+def random_commit_times(count: int) -> list[str | None]:
+    """Backdated timestamps for today: first between 09:00-12:00, then 15-45 min apart.
+
+    Times not already in the past (e.g. a manual daytime run) fall back to None (now).
+    """
+    tz = ZoneInfo(os.environ.get("COMMIT_TZ", "UTC"))
+    now = datetime.now(tz)
+    t = now.replace(hour=9, minute=0, second=0, microsecond=0)
+    t += timedelta(seconds=random.randint(0, 3 * 3600))
+    times: list[str | None] = []
+    for _ in range(count):
+        times.append(t.isoformat() if t < now else None)
+        t += timedelta(seconds=random.randint(900, 2700))
+    return times
 
 
 def remote_branch_exists(cwd: Path, branch: str) -> bool:
@@ -611,7 +630,7 @@ def ensure_file_diff(file_path: Path) -> None:
 
 
 def commit_and_push(
-    cwd: Path, branch: str, rel_path: str, message: str
+    cwd: Path, branch: str, rel_path: str, message: str, commit_date: str | None = None
 ) -> None:
     sync_target_repo(cwd, branch)
     full_path = cwd / rel_path
@@ -622,7 +641,12 @@ def commit_and_push(
         ensure_file_diff(full_path)
         run_git(["add", rel_path], cwd=cwd)
 
-    run_git(["commit", "-m", message], cwd=cwd)
+    date_env = (
+        {"GIT_AUTHOR_DATE": commit_date, "GIT_COMMITTER_DATE": commit_date}
+        if commit_date
+        else None
+    )
+    run_git(["commit", "-m", message], cwd=cwd, env=date_env)
 
     for attempt in range(3):
         push_res = run_git(["push", "-u", "origin", branch], cwd=cwd, check=False)
@@ -666,12 +690,6 @@ def main() -> None:
 
     skip_delay = os.environ.get("SKIP_DELAY", "false").lower() == "true"
 
-    if not skip_delay:
-        initial_sleep = random.randint(900, 2700)
-        print(
-            f"[i] Waiting {initial_sleep // 60} min ({initial_sleep}s) before starting daily solve..."
-        )
-        time.sleep(initial_sleep)
 
     target_repo_dir = prepare_target_repo(root_dir)
     solved_db_path = root_dir / "solved_problems.json"
@@ -693,6 +711,8 @@ def main() -> None:
     run_git(["config", "user.email", git_email], cwd=target_repo_dir)
 
     num_to_solve = random.randint(2, 5)
+    # Single evening run; commits are backdated to random daytime times instead of sleeping.
+    commit_times = [None] * num_to_solve if skip_delay else random_commit_times(num_to_solve)
     available_tags = list(CATEGORIES.keys())
     random.shuffle(available_tags)
 
@@ -761,7 +781,9 @@ def main() -> None:
             commit_msg = build_commit_message(
                 folder_name, file_name, problem=detail, is_update=is_update
             )
-            commit_and_push(target_repo_dir, target_branch, rel_path, commit_msg)
+            commit_and_push(
+                target_repo_dir, target_branch, rel_path, commit_msg, commit_times[solved_count]
+            )
 
             if slug not in solved_slugs:
                 solved_slugs.add(slug)
@@ -773,11 +795,6 @@ def main() -> None:
             solved_count += 1
             consecutive_failures = 0
             print(f"[+] Committed {rel_path} ({solved_count}/{num_to_solve})")
-
-            if solved_count < num_to_solve and not skip_delay:
-                sleep_time = random.randint(900, 2700)
-                print(f"[i] Sleeping {sleep_time // 60} min before next commit")
-                time.sleep(sleep_time)
 
         except Exception as exc:
             consecutive_failures += 1
@@ -811,14 +828,12 @@ def main() -> None:
         commit_msg = build_commit_message(
             cat_name, file_name, problem=chosen_fb, is_update=is_update
         )
-        commit_and_push(target_repo_dir, target_branch, rel_path, commit_msg)
+        commit_and_push(
+            target_repo_dir, target_branch, rel_path, commit_msg, commit_times[solved_count]
+        )
 
         solved_count += 1
         print(f"[+] Fallback commit completed ({solved_count}/{num_to_solve})")
-        if solved_count < num_to_solve and not skip_delay:
-            sleep_time = random.randint(900, 2700)
-            print(f"[i] Sleeping {sleep_time // 60} min before next commit")
-            time.sleep(sleep_time)
 
     solved_data["last_run"] = int(time.time())
     solved_db_path.write_text(

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       skip_delay:
-        description: 'Skip random sleep delays (for quick manual test)'
+        description: 'Commit with current time instead of backdated times (manual test)'
         required: false
         default: 'false'
         type: choice
@@ -18,7 +18,7 @@ permissions:
 jobs:
   solve-and-push:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 15
     steps:
       - name: Checkout Runner Repo
         uses: actions/checkout@v5
@@ -49,9 +49,10 @@ jobs:
           fi
           tr -d '\r' < .env | grep -v '^#' | grep -v '^[[:space:]]*$' >> "$GITHUB_ENV"
 
-      - name: Solve 2-3 Random LeetCode Problems with Random Delays & Push
+      - name: Solve 2-5 Random LeetCode Problems (Backdated Commits) & Push
         env:
           SKIP_DELAY: ${{ inputs.skip_delay || 'false' }}
+          COMMIT_TZ: Asia/Kathmandu
         run: python3 solve_leetcode.py
 
       - name: Save Solved State in Runner Repo
