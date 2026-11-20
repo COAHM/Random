@@ -47,6 +47,14 @@ jobs:
               } > .env
             fi
           fi
+          # Mask each value individually; values inside the multi-line ENV_FILE secret
+          # are not reliably masked on their own (logs are public on a public repo).
+          while IFS='=' read -r key value; do
+            value="${value%\"}"; value="${value#\"}"
+            if [ -n "$value" ] && [ "$key" != "TARGET_BRANCH" ]; then
+              echo "::add-mask::$value"
+            fi
+          done < <(tr -d '\r' < .env | grep -v '^#' | grep -v '^[[:space:]]*$')
           tr -d '\r' < .env | grep -v '^#' | grep -v '^[[:space:]]*$' >> "$GITHUB_ENV"
 
       - name: Solve 2-5 Random LeetCode Problems (Backdated Commits) & Push
