@@ -547,18 +547,26 @@ def run_git(
 
 
 def random_commit_times(count: int) -> list[str | None]:
-    """Backdated timestamps for today: first between 09:00-12:00, then 15-45 min apart.
+    """Backdated timestamps for today: first between 13:00-14:00, then 1-3 h apart.
 
-    Times not already in the past (e.g. a manual daytime run) fall back to None (now).
+    Gaps shrink proportionally if needed so every commit lands before now; times
+    still not in the past (e.g. a manual early-afternoon run) fall back to None (now).
     """
     tz = ZoneInfo(os.environ.get("COMMIT_TZ", "UTC"))
     now = datetime.now(tz)
-    t = now.replace(hour=9, minute=0, second=0, microsecond=0)
-    t += timedelta(seconds=random.randint(0, 3 * 3600))
+    t = now.replace(hour=13, minute=0, second=0, microsecond=0)
+    t += timedelta(seconds=random.randint(0, 3600))
+    gaps = [random.randint(3600, 3 * 3600) for _ in range(count - 1)]
+    # keep the last commit a random 5-60 min before now so it isn't always the same offset
+    room = (now - t).total_seconds() - random.randint(300, 3600)
+    if gaps and sum(gaps) > room > 0:
+        scale = room / sum(gaps)
+        gaps = [int(g * scale) for g in gaps]
     times: list[str | None] = []
-    for _ in range(count):
+    for i in range(count):
         times.append(t.isoformat() if t < now else None)
-        t += timedelta(seconds=random.randint(900, 2700))
+        if i < len(gaps):
+            t += timedelta(seconds=gaps[i])
     return times
 
 
