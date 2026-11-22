@@ -72,7 +72,12 @@
     "find-the-difference",
     "edit-distance",
     "implement-magic-dictionary",
-    "pyramid-transition-matrix"
+    "pyramid-transition-matrix",
+    "redundant-connection-ii",
+    "count-numbers-with-unique-digits",
+    "prefix-and-suffix-search",
+    "h-index-ii",
+    "super-ugly-number"
   ],
-  "last_run": 1795267041
+  "last_run": 1795353626
 }
