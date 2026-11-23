@@ -77,7 +77,10 @@
     "count-numbers-with-unique-digits",
     "prefix-and-suffix-search",
     "h-index-ii",
-    "super-ugly-number"
+    "super-ugly-number",
+    "add-two-numbers-ii",
+    "same-tree",
+    "reverse-vowels-of-a-string"
   ],
-  "last_run": 1795353626
+  "last_run": 1795439964
 }
