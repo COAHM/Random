@@ -80,7 +80,9 @@
     "super-ugly-number",
     "add-two-numbers-ii",
     "same-tree",
-    "reverse-vowels-of-a-string"
+    "reverse-vowels-of-a-string",
+    "longest-repeating-character-replacement",
+    "intersection-of-two-arrays-ii"
   ],
-  "last_run": 1795439964
+  "last_run": 1795526155
 }
