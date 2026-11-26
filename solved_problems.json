@@ -84,7 +84,12 @@
     "longest-repeating-character-replacement",
     "intersection-of-two-arrays-ii",
     "substring-with-concatenation-of-all-words",
-    "unique-paths"
+    "unique-paths",
+    "sum-root-to-leaf-numbers",
+    "intersection-of-two-arrays",
+    "mini-parser",
+    "random-pick-with-weight",
+    "network-delay-time"
   ],
-  "last_run": 1795612585
+  "last_run": 1795699193
 }
