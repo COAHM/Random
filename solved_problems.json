@@ -93,7 +93,10 @@
     "construct-binary-tree-from-preorder-and-inorder-traversal",
     "word-ladder",
     "search-in-rotated-sorted-array-ii",
-    "matchsticks-to-square"
+    "matchsticks-to-square",
+    "excel-sheet-column-number",
+    "reverse-pairs",
+    "simplify-path"
   ],
-  "last_run": 1795785496
+  "last_run": 1795871894
 }
